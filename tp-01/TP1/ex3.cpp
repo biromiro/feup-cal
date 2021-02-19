@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <set>
 #include <numeric>
-
+/*
 std::set<std::vector<int>> generateCombinations(std::vector<int> values){
 
     std::vector<std::vector<int>> permutations;
@@ -21,23 +21,45 @@ std::set<std::vector<int>> generateCombinations(std::vector<int> values){
             result.insert(subvector);
         }
     }
+    return result;
+}
+*/
 
+std::set<std::vector<int>> generateCombinations(std::vector<int> values){
+    std::vector<int> current(values.size(), 0);
+    std::set<std::vector<int>> result;
+
+    int currentIndex = values.size() - 1, maxIndex = currentIndex;
+
+
+    while(current != values){
+        result.insert(current);
+        if(current[currentIndex] < values[currentIndex]){
+            current[currentIndex] += 1;
+        }else{
+            while(current[currentIndex] == values[currentIndex]) currentIndex--;
+            current[currentIndex]++;
+            while(currentIndex != maxIndex){
+                currentIndex++;
+                current[currentIndex] = 0;
+            }
+        }
+    }
+    result.insert(current);
 
     return result;
 }
 
+
 bool changeMakingBF(unsigned int C[], unsigned int Stock[], unsigned int n, unsigned int T, unsigned int usedCoins[]){
     int minCoins = -1;
-    std::vector<int> availCoins;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < Stock[i]; ++j) {
-            availCoins.push_back(C[i]);
-        }
-    }
+    std::vector<int> availCoins(Stock, Stock + n);
+    std::vector<int> coinValues(C, C+n);
     auto combinations =  generateCombinations(availCoins);
     std::vector<int> result;
     for(const auto& val: combinations){
-        if(std::accumulate(val.begin(), val.end(),0) == T){
+        auto res = std::inner_product(coinValues.begin(), coinValues.end(), val.begin(), 0);
+        if( res == T){
             if(result.size() == 0 || val.size() < result.size()){
                 result = val;
             }
@@ -46,7 +68,7 @@ bool changeMakingBF(unsigned int C[], unsigned int Stock[], unsigned int n, unsi
     if(result.empty()) return false;
     else{
         for(size_t i=0; i<n; i++){
-            usedCoins[i] = std::count(result.begin(),result.end(),C[i]);
+            usedCoins[i] = result[i];
         }
         return true;
     }
