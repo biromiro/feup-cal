@@ -61,7 +61,7 @@ bool changeMakingBF(unsigned int C[], unsigned int Stock[], unsigned int n, unsi
     for (const auto &val: combinations) {
         auto res = std::inner_product(coinValues.begin(), coinValues.end(), val.begin(), 0);
         if (res == T) {
-            if (result.size() == 0 ||
+            if (result.empty() ||
                 std::accumulate(val.begin(), val.end(), 0) < std::accumulate(result.begin(), result.end(), 0)) {
                 result = val;
             }
