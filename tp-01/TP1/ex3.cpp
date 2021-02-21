@@ -61,7 +61,8 @@ bool changeMakingBF(unsigned int C[], unsigned int Stock[], unsigned int n, unsi
     for (const auto &val: combinations) {
         auto res = std::inner_product(coinValues.begin(), coinValues.end(), val.begin(), 0);
         if (res == T) {
-            if (result.size() == 0 || val.size() < result.size()) {
+            if (result.size() == 0 ||
+                std::accumulate(val.begin(), val.end(), 0) < std::accumulate(result.begin(), result.end(), 0)) {
                 result = val;
             }
         }
@@ -101,7 +102,7 @@ TEST(TP1_Ex3, hasBFChangeCanonical) {
 
 TEST(TP1_Ex3, hasBFChangeNonCanonical) {
     unsigned int C[] = {1, 4, 5};
-    unsigned int Stock[] = {3, 2, 1};
+    unsigned int Stock[] = {5, 5, 5};
     unsigned int n = 3;
     unsigned int usedCoins[3] = {0, 0, 0};
 
