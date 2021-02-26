@@ -106,7 +106,7 @@ private:
      */
     void clear();
 
-    bool validSquare(int i, int j, int n);
+    //bool validSquare(int i, int j, int n);
 };
 
 // Ex 3

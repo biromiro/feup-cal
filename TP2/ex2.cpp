@@ -94,14 +94,15 @@ void Sudoku::print() const {
 }
 
 bool Sudoku::accepts(int i, int j, int n) {
-    std::set<int> curCol, curRow;
+    /*std::set<int> curCol, curRow;
     for(size_t k = 0; k < 9; k++) {
         curCol.insert(numbers[k][j]);
         curRow.insert(numbers[i][k]);
     }
-    return !curCol.count(n) && !curRow.count(n) && validSquare(i,j,n);
+    return !curCol.count(n) && !curRow.count(n) && validSquare(i,j,n);*/
+    return !lineHasNumber[i][n] && !columnHasNumber[j][n] && !block3x3HasNumber[i / 3][j / 3][n];
 }
-
+/*
 bool Sudoku::validSquare(int i, int j, int n){
     size_t squareX = i / 3;
     size_t squareY = j / 3;
@@ -112,7 +113,7 @@ bool Sudoku::validSquare(int i, int j, int n){
         }
     }
     return !curSquare.count(n);
-}
+}*/
 
 void Sudoku::place(int i, int j, int n) {
     if (numbers[i][j] != 0)
