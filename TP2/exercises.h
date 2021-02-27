@@ -4,7 +4,7 @@
 #define CAL_TP2_CLASSES_EXERCISES_H
 
 #include <vector>
-
+#include <set>
 // Ex 1
 #define MAZE_WALL 0
 #define MAZE_PATH 1
@@ -85,6 +85,8 @@ private:
     bool lineHasNumber[9][10];
     bool block3x3HasNumber[3][3][10];
 
+    std::set<std::vector<int>> solutions = {};
+
     void initialize();
     /**
      * Checks if the cell at line i, column j accepts number n
@@ -106,7 +108,7 @@ private:
      */
     void clear();
 
-    //bool validSquare(int i, int j, int n);
+    std::vector<int> numbersToVector();
 };
 
 // Ex 3

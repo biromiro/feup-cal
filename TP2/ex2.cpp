@@ -1,5 +1,6 @@
 #include "exercises.h"
 #include <set>
+#include <random>
 
 Sudoku::Sudoku() {
     this->initialize();
@@ -63,9 +64,23 @@ bool Sudoku::solve() {
     return false;
 }
 
+std::vector<int> Sudoku::numbersToVector(){
+    std::vector<int> values;
+    for(int i=0; i < 10; i++){
+        for (int j=0; j < 10; j++){
+            values.push_back(numbers[i][j]);
+        }
+    }
+    return values;
+}
+
 int Sudoku::countSolutions() {
-    if(isComplete()) return 1;
-    int count = 0;
+    if(isComplete()){
+        auto sol = numbersToVector();
+        if(solutions.count(sol)) return 0;
+        solutions.insert(sol);
+        return 1;
+    }
     std::pair<int,int> bestPlace = {-1,-1};
     std::vector<int> possibleNumbers(10,-1);
     for(size_t i=0; i < 9; i++){
@@ -82,16 +97,53 @@ int Sudoku::countSolutions() {
         }
     }
 
+    int count = 0;
     for(const auto& val: possibleNumbers){
         place(bestPlace.first, bestPlace.second, val);
-        count += solve();
+        count += countSolutions();
         clear(bestPlace.first, bestPlace.second);
     }
+
     return count;
 }
 
 void Sudoku::generate() {
-	//TODO
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> distribution(0,9);
+    std::uniform_int_distribution<int> distribution2(1, 9);
+    int currentSol[9][9] =
+            {{0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0}};
+    while(true){
+        int i = distribution(generator);
+        int j = distribution(generator);
+        int num = distribution2(generator);
+        for (int m = 0; m < 9; m++) {
+            for (int n = 0; n < 9; n++) {
+                clear(m,n);
+                place(m,n,currentSol[m][n]);
+            }
+        }
+        if(currentSol[i][j] == 0) currentSol[i][j] = num;
+        place(i, j, num);
+        int sols = countSolutions();
+        if( sols == 1){
+            for (int m = 0; m < 9; m++) {
+                for (int n = 0; n < 9; n++) {
+                    clear(m,n);
+                    place(m,n,currentSol[m][n]);
+                }
+            }
+            return;
+        }
+    }
 }
 
 int** Sudoku::getNumbers() {
@@ -174,7 +226,6 @@ TEST(TP2_Ex2, testSudokuAlreadySolved) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve(), true);
-    std::cout << s.countSolutions() << std::endl;
     int out[9][9];
     int** res = s.getNumbers();
 
@@ -210,7 +261,6 @@ TEST(TP2_Ex2, testSudokuNoneBackStepsRequired) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve(), true);
-    std::cout << s.countSolutions() << std::endl;
     int sout[9][9];
     int** res = s.getNumbers();
 
@@ -246,7 +296,6 @@ TEST(TP2_Ex2, testSudokuSomeBackStepsRequired) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve(), true);
-    std::cout << s.countSolutions() << std::endl;
     int sout[9][9];
     int** res = s.getNumbers();
 
@@ -282,7 +331,6 @@ TEST(TP2_Ex2, testSudokuManyBackStepsRequired) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve(), true);
-    std::cout << s.countSolutions() << std::endl;
     int sout[9][9];
     int **res = s.getNumbers();
 
@@ -318,7 +366,6 @@ TEST(TP2_Ex2, testSudokuWithMinimalClues) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve(), true);
-    std::cout << s.countSolutions() << std::endl;
     int sout[9][9];
     int** res = s.getNumbers();
 
@@ -331,7 +378,7 @@ TEST(TP2_Ex2, testSudokuWithMinimalClues) {
 
 TEST(TP2_Ex2, testSudokuWithMultipleSolutions) {
     int in[9][9] =
-            {{0/*7*/, 0, 0, 1, 0, 8, 0, 0, 0},
+            {{5/*7*/, 0, 0, 1, 0, 8, 0, 0, 0},
              {0, 9, 0, 0, 0, 0, 0, 3, 2},
              {0, 0, 0, 0, 0, 5, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 1, 0, 0},
@@ -343,7 +390,6 @@ TEST(TP2_Ex2, testSudokuWithMultipleSolutions) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve() && s.isComplete(), true);
-    std::cout << s.countSolutions() << std::endl;
     int** out = s.getNumbers();
     for (int i=0; i<9; i++)
         for (int j=0; j<9; j++)
@@ -365,7 +411,6 @@ TEST(TP2_Ex2, testSudokuEmpty) {
 
     Sudoku s(in);
     EXPECT_EQ(s.solve(), true);
-    std::cout << s.countSolutions() << std::endl;
     EXPECT_EQ(s.isComplete(), true);
 }
 
@@ -386,7 +431,6 @@ TEST(TP2_Ex2, testSudokuImpossible) {
 
     int out[9][9];
     int** res = s.getNumbers();
-    std::cout << s.countSolutions() << std::endl;
     for (int i = 0; i < 9; i++)
         for (int a = 0; a < 9; a++)
             out[i][a] = res[i][a];
@@ -410,16 +454,35 @@ TEST(TP2_Ex2, testSudokuVariousSolutions) {
     EXPECT_EQ(s.countSolutions(), 2);
 
     int in2[9][9] =
+            {{5/*7*/, 0, 0, 1, 0, 8, 0, 0, 0},
+             {0, 9, 0, 0, 0, 0, 0, 3, 2},
+             {0, 0, 0, 0, 0, 5, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 1, 0, 0},
+             {9, 6, 0, 0, 2, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 8, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 5, 0, 0, 1, 0, 0, 0},
+             {3, 2, 0, 0, 0, 0, 0, 0, 6}};
+
+    Sudoku s2(in2);
+    EXPECT_EQ(s2.countSolutions(), 308);
+}
+/*
+TEST(TP2_Ex2, generate) {
+
+    int in[9][9] =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0},
-             {0, 0, 3, 0, 0, 0, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 0, 0, 0},
-             {0, 0, 0, 0, 0, 4, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 0, 0, 0},
-             {0, 0, 2, 0, 0, 0, 0, 0, 1},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-    Sudoku s2(in2);
-    EXPECT_EQ(s.countSolutions(), 6);
-}
+    Sudoku s(in);
+    s.generate();
+    s.print();
+    EXPECT_EQ(s.countSolutions(), 1);
+}*/
