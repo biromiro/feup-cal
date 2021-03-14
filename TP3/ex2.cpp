@@ -5,21 +5,39 @@ int maxSub(int A[], unsigned int n, int &i, int &j){
     int left_i = i, left_j = i + n/2 - 1, max_left = maxSub(A, n/2, left_i, left_j);
     int right_i = i + n/2, right_j = j, max_right = maxSub(A, n/2, right_i, right_j);
 
-    int max_sum, i_ret, j_ret;
+    int max_sum, i_ret, j_ret, i_ret_left = left_i, j_ret_right = right_j, current_sum = 0;
 
     if(max_left > max_right) {max_sum = max_left; i_ret = left_i; j_ret = left_j;}
     else {max_sum = max_right; i_ret = right_i; j_ret = right_j;}
 
-    for(int k = left_i; k <= left_j; k++){
-        for(int m = right_i; m <= right_j; m++){
-            int sum = 0;
-            for(int t = k; t <= m; t++) sum += A[t];
-            if(sum > max_sum) { i_ret = k; j_ret = m; max_sum = sum; }
+    max_left = A[i + n/2 - 1]; max_right = A[i + n/2];
+
+    for(int k =  i + n/2 - 1; k >= left_i; k--){
+        current_sum += A[k];
+        if(current_sum > max_left){
+            max_left = current_sum;
+            i_ret_left = k;
         }
+    }
+
+    current_sum = 0;
+
+    for(int k =  i + n/2; k <= right_j; k++){
+        current_sum += A[k];
+        if(current_sum > max_right){
+            max_right = current_sum;
+            j_ret_right = k;
+        }
+    }
+
+    if(max_sum < max_right + max_left){
+        max_sum = max_right + max_left;
+        i_ret = i_ret_left; j_ret = j_ret_right;
     }
 
     i = i_ret; j = j_ret;
     return max_sum;
+
 
 }
 

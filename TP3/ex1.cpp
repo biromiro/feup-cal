@@ -64,7 +64,7 @@ Result nearestPoints_BF(std::vector<Point> &vp) {
     double distance;
     for(size_t i = 0; i < vp.size() - 1; i++){
         for(size_t j = i + 1; j < vp.size(); j++){
-            if((distance = vp[i].distSquare(vp[j])) < res.dmin || res.dmin == -1) res = Result(sqrt(distance), vp[i], vp[j]);
+            if(res.dmin == -1 || (distance = vp[i].distSquare(vp[j])) < res.dmin) res = Result(sqrt(distance), vp[i], vp[j]);
         }
     }
     return res;
