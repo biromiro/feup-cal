@@ -1,8 +1,35 @@
 #include "exercises.h"
+#include <array>
+
 
 bool changeMakingUnlimitedDP(unsigned int C[], unsigned int n, unsigned int T, unsigned int usedCoins[]) {
-    // TODO
-	return false;
+    int minCoins[n+1][T+1];
+    int lastCoin[n+1][T+1];
+
+    for(int i = 0; i <= n; i++){
+        for(int j = 0; j <= T; j++){
+            if(j == 0) { minCoins[i][j] = 0; lastCoin[i][j] = -1; }
+            else if(i == 0) { minCoins[i][j] = T+1; lastCoin[i][j] = -1; }
+            else {
+                unsigned int a = T + 1, b = T + 1;
+                int offset = j - (int)C[i-1];
+                if (offset >= 0) a = minCoins[i][offset] + 1;
+                if (i - 1 >= 0) b = minCoins[i - 1][j];
+                minCoins[i][j] = std::min(a, b);
+                if (a < b) lastCoin[i][j] = i-1;
+                else lastCoin[i][j] = lastCoin[i-1][j];
+            }
+        }
+    }
+    for(int i = 0; i < n; i++) usedCoins[i] = 0;
+
+    int i = T;
+    while(i > 0){
+        if(lastCoin[n][i] != -1) usedCoins[lastCoin[n][i]] += 1;
+        else return false;
+        i -= C[lastCoin[n][i]];
+    }
+    return true;
 }
 
 
