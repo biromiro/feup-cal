@@ -1,4 +1,5 @@
 #include <synchapi.h>
+#include <iostream>
 #include "graphviewer.h"
 
 using namespace std;
@@ -48,7 +49,7 @@ void ex2() {
                                  {11,13},
     };
 
-    id = 0;
+    //id = 0;
     for(auto pair: edges)
         gv.addEdge(id++,
                    gv.getNode(pair.first),
@@ -64,16 +65,15 @@ void ex2() {
     bool i = false;
 
     while(gv.isWindowOpen()){
-        gv.lock();
 
+        Sleep(1000);
+
+        gv.lock();
         node12.setPosition(i ? sf::Vector2f(250, 550) : sf::Vector2f(200, 550));
         node13.setPosition(i ? sf::Vector2f(350, 550) : sf::Vector2f(400, 550));
+        gv.unlock();
 
         i = !i;
-
-        Sleep(10);
-
-        gv.unlock();
     }
 
     // Join viewer thread (blocks till window closed)

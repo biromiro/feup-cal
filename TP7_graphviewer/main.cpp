@@ -5,8 +5,8 @@ void ex4();
 
 int main(){
     //ex1();
-    ex2();
-    // ex3();
+    //ex2();
+    ex3();
     //ex4();
     return 0;
 }
